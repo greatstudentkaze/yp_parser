@@ -10,6 +10,8 @@ headers = {
 
 base_url = 'https://yandex.ru/pogoda/saint-petersburg/details?via=ms'
 
+flag = True
+
 
 def weather_parse():
     session = requests.Session()
@@ -74,12 +76,30 @@ def weather_parse():
         Label(root, text='ERROR', bg="red", fg="#fff").grid(row=1, column=1, columnspan=2)
 
 
+# удаление всех элементов окна кроме кнопки Обновить
+def cleanup():
+    to_delete_list = root.grid_slaves()
+    for delete_item in to_delete_list:
+        if (delete_item != updateButton) and (delete_item != copyLabel):
+            delete_item.destroy()
+
+
+def update_func():
+    global flag
+    if flag:
+        weather_parse()
+        flag = False
+    else:
+        cleanup()
+        weather_parse()
+
+
 root = Tk()
 root.title('Парсер сайта Яндекс Погода')
 root.geometry("1500x250")
 
-updateButton = Button(root, text="Update", fg="#fff", bg="#0d801b", font=("Arial", 15), relief="flat",
-                      command=weather_parse)
+updateButton = Button(root, text="Обновить", fg="#fff", bg="#0d801b", font=("Arial", 15), relief="flat",
+                      command=update_func)
 updateButton.grid(row=3, columnspan=2, column=0, pady=15, padx=20)
 
 copyLabel = Label(root, text='GSK © 2019', font=("Arial", 15))
